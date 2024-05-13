@@ -1,0 +1,49 @@
+ROOT:
+npm install dotenv express cors pg supabase "@supabase/supabase-js"
+create .gitignore file and add "node_modules" and ".env"
+create a "client" folder
+
+CLIENT:
+npx create-react-app .
+npm install react-router-dom
+clean-up folder
+add basic CSS (for buttons and inputs also)
+Add ".env" and Delete "/build" from .gitignore inside client folder
+Test react app to see if everything is ok: npm start
+
+SUPABASE:
+Click on "New Project"
+Enter your "Database Password" and don't forget it
+Click on "Connect" and copy the connection string
+
+ROOT:
+Create ".env" file add inside DATABASE_URL = ...connection string....
+Here you'll need your database password and paste it inside connection string
+
+Create "db.js" file and copy-paste the code below in it
+
+Create "server.js" file and copy paste the code below in it
+
+
+/******CSS*******/
+body {
+  margin: 0;
+  font-family: 'Trebuchet MS';
+  background-color: yellowgreen;
+  margin: auto;
+  text-align: center;
+}
+
+
+/*****.ENV******/
+DATABASE_URL = "postgres://postgres.nmpakqwcdpyfmfbuekir:Konsolosluk2099-.@aws-0-eu-central-1.pooler.supabase.com:5432/postgres"
+
+/*****DB.JS*******/
+require("dotenv").config();
+const { Pool } = require("pg");
+//Initialize PostgreSQL pool
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+})
+module.exports = { pool };
