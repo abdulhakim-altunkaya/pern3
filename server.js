@@ -1,60 +1,67 @@
-
-
-
-
-
-
 const express = require("express");
 const app = express();
 
-const { supabase, pool } = require('./db'); // Import the connection
+const { pool } = require("./db"); //database connection
 
-//we need cors middleware because frontend and backend run on different ports
+//we need this middleware because frontend and backend run on different ports
 const cors = require("cors");
 app.use(cors());
 
-//Take json data in req.body and converts it into JS object so that our backend can work with it. 
-//For now, we dont have req.body but we might use it. 
-//extended false means dont deal with anything more advanced than basic objects and arrays
-app.use(express.json({extended: false}))
+//express.json takes json data inside req.body and converts it into js object so that we can use it here.
+//We will probably send data from frontend to backend that
+app.use(express.json({extended: false}));
 
-app.get("/readfromserver", (req, res) => {
-  res.json({myMessage: "Hey from server"});
-})
+app.get("/serversendhello", (req, res) => {
+  res.json({myMessage: "Hey from the server"});
+});
 
 app.get("/servercreatetable", async (req, res) => {
   const client = await pool.connect();
   try {
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS aufgaben (
+    const result = await client.query(`
+      CREATE TABLE IF NOT EXISTS gedanken (
         id SERIAL PRIMARY KEY,
-        description TEXT
+        sentenceEng TEXT,
+        sentencePor TEXT
       )
     `);
-    console.log("table created successfully");
+    if (result.command === 'CREATE') {
+      console.log("The 'gedanken' table was created.");
+      res.status(200).json({myMessage: "The 'gedanken' table created" });
+    } else {
+      console.log("The 'gedanken' table already exists.");
+      res.status(409).json({myMessage: "The 'gedanken' table already exists" });
+    }
   } catch (error) {
-    console.log(error.message);
+    console.log("Error-Backend-servercreatetable route: " + error.message);
+    res.status(409).json({myMessage: "The 'gedanken' table creation failed, connection to database failed" });
   } finally {
     client.release();
   }
 });
 
-app.post("/serveraddtask", async (req, res) => {
-  const { myTask } = req.body;
+app.post("/serveraddsentences", async () => {
+  const { senEng, senPor } = req.body;
   try {
     const client = await pool.connect();
     const result = await client.query(
-      `INSERT INTO aufgaben (description) VALUES ($1) RETURNING *`,
-      [myTask]
+    `INSERT INTO gedanken (senEng, senPor) VALUES ($1, $2) RETURNING *`,
+    [senEng, senPor]
     );
     client.release();
-    console.log("Task added successully", result.rows[0]);
-    res.status(201).send('Task added successfully');
+    res.status(201).json({ myMessage: "SERVER: Sentences successfully saved"});
   } catch (error) {
     console.log(error.message);
+    res.status(500).json({ myMessage: "SERVER: failed attempt at saving sentences. Probably connection to database failed"});
   }
 });
 
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`server is running on PORT: ${PORT}`);
+})
+
+/*
 
 app.get("/servergettasks", async (req, res) => {
   try {
@@ -88,7 +95,7 @@ app.post("/serverdeletetask", async (req, res) => {
       SET id = id - 1
       WHERE id > $1
     `, [taskId]);
-    */
+    *//*
     client.release();
     res.status(200).send("Task deleted successfully");
   } catch (error) {
@@ -113,8 +120,4 @@ app.post("/serverupdatetask", async (req, res) => {
     res.status(500).send('Server Error updating task'); // Send error response to client
   }
 })
-
-const PORT = process.env.PORT ||5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on PORT: ${PORT}`);
-});
+*/

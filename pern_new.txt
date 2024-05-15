@@ -5,7 +5,7 @@ create a "client" folder
 
 CLIENT:
 npx create-react-app .
-npm install react-router-dom
+npm install axios "react-router-dom"
 clean-up folder
 add basic CSS (for buttons and inputs also)
 Add ".env" and Delete "/build" from .gitignore inside client folder
@@ -23,6 +23,8 @@ Here you'll need your database password and paste it inside connection string
 Create "db.js" file and copy-paste the code below in it
 
 Create "server.js" file and copy paste the code below in it
+
+Create components folder and a routing logic inside App.js
 
 
 /******CSS*******/
@@ -47,3 +49,7 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 })
 module.exports = { pool };
+
+
+
+/*****SERVER.JS*******/

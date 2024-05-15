@@ -2,4 +2,28 @@ body {
   margin: 0;
   font-family:"Trebuchet MS";
   background-color: yellowgreen;
+  text-align: center;
+}
+
+.navbarButtons {
+  padding: 10px;
+  min-width: 40px;
+  background-color: lightgray;
+  font-family: Impact;
+  margin-left: 20px;
+  font-size: 30px;
+  letter-spacing: 2px;
+}
+
+.buttons1 {
+  padding: 5px;
+  background-color: lightseagreen;
+  color: white;
+  font-size: 30px;
+  font-family: 'Trebuchet MS';
+}
+
+.buttons1:hover {
+  background-color: lightsalmon;
+  cursor: pointer;
 }
