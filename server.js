@@ -40,19 +40,17 @@ app.get("/servercreatetable", async (req, res) => {
   }
 });
 
-app.post("/serveraddsentences", async () => {
-  const { senEng, senPor } = req.body;
+app.post("/serversavesentences", async (req, res) => {
+  const {senEng, senPor} = req.body;
   try {
     const client = await pool.connect();
-    const result = await client.query(
-    `INSERT INTO gedanken (senEng, senPor) VALUES ($1, $2) RETURNING *`,
-    [senEng, senPor]
+    await client.query(
+      `INSERT INTO gedanken (sentenceeng, sentencepor) VALUES ($1, $2) RETURNING *`, [senEng, senPor]
     );
     client.release();
-    res.status(201).json({ myMessage: "SERVER: Sentences successfully saved"});
+    res.status(201).json({myMessage: "Sentences saved successfully"});
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ myMessage: "SERVER: failed attempt at saving sentences. Probably connection to database failed"});
+    res.status(500).json({myMessage: "Failure to save sentences to database"});
   }
 });
 

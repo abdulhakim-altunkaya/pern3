@@ -1,8 +1,16 @@
-import React from 'react'
+import React, {useEffect, useState} from 'react';
+import axios from "axios";
 
 function Read() {
+
+  const fetchData = async () => {
+    
+  }
   return (
-    <div>Read</div>
+    <div>
+      <button onClick={fetchData} className='buttons1'> Fetch Data</button>
+      
+    </div>
   )
 }
 
