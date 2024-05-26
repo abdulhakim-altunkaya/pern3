@@ -59,6 +59,21 @@ app.listen(PORT, () => {
   console.log(`server is running on PORT: ${PORT}`);
 })
 
+app.get("/servergetsentences", async (req, res) => {
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      `SELECT * FROM gedanken`
+    );
+    client.release();
+    const dbSentences = result.rows;
+    res.status(200).json(dbSentences);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500);
+  } 
+})
+
 /*
 
 app.get("/servergettasks", async (req, res) => {
