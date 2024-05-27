@@ -72,6 +72,19 @@ app.get("/servergetsentences", async (req, res) => {
     console.log(error.message);
     res.status(500);
   } 
+});
+
+app.post("/serverdeletesentence", async (req, res) => {
+  const {targetSentence} = req.body;
+  try {
+    const client = await pool.connect();
+    const result = await client.query(
+      `DELETE FROM gedanken WHERE id = $1`, [targetSentence]
+    )
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({myMessage: "Backend: Error while deleting data"})
+  }
 })
 
 /*
