@@ -54,10 +54,7 @@ app.post("/serversavesentences", async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`server is running on PORT: ${PORT}`);
-})
+
 
 app.get("/servergetsentences", async (req, res) => {
   try {
@@ -78,72 +75,38 @@ app.post("/serverdeletesentence", async (req, res) => {
   const {targetSentence} = req.body;
   try {
     const client = await pool.connect();
-    const result = await client.query(
+    await client.query(
       `DELETE FROM gedanken WHERE id = $1`, [targetSentence]
-    )
+    );
+    client.release();
+    res.status(201).json({myMessage: "Sentence deleted"});
   } catch (error) {
     console.log(error.message);
     res.status(500).json({myMessage: "Backend: Error while deleting data"})
   }
 })
 
-/*
-
-app.get("/servergettasks", async (req, res) => {
+app.post("/serverupdatesentence", async (req, res) => {
+  const {senEng, senPor, targetId2} = req.body;
   try {
     const client = await pool.connect();
-    const result = await client.query(
-      'SELECT * FROM aufgaben'
+    await client.query(
+      `UPDATE gedanken SET sentenceEng = $1, sentencePor = $2 WHERE id = $3`, [senEng, senPor, targetId2]
     );
-    client.release(); // Release the client connection
-    const dbTasks = result.rows; // Extract tasks from the query result
-    res.status(200).json(dbTasks); // Send tasks to the client
-  } catch (error) {
-    console.error('Error fetching tasks:', error.message);
-    res.status(500).send('Error fetching tasks'); // Send error response to client
-  }
-});
-
-app.post("/serverdeletetask", async (req, res) => {
-  const { taskId } = req.body;
-  try {
-    const client = await pool.connect();
-    const result = await client.query(
-      `DELETE FROM aufgaben WHERE id = $1`,
-      [taskId]
-    );
-    /* Step 2: Reorder the IDs
-    This is not useful. Because each id is a one time use.
-    For example if there is 5 records and I delete record Number 5,
-    Then If I save another record it will have record number 6 not 5. 
-    await client.query(`
-      UPDATE aufgaben
-      SET id = id - 1
-      WHERE id > $1
-    `, [taskId]);
-    *//*
     client.release();
-    res.status(200).send("Task deleted successfully");
+    res.status(200).json({myMessage: "Sentence successfully updated"});
   } catch (error) {
-    console.error('Error deleting task:', error.message);
-    res.status(500).send('Error deleting task'); // Send error response to client
+    console.log(error.message);
+    res.status(500).json({myMessage: "Backend: Error while updating sentence. Check console"})
   }
-});
-
-app.post("/serverupdatetask", async (req, res) => {
-  const {taskText, taskId} = req.body;
-  try {
-    const client = await pool.connect();
-    const result = await client.query(
+})
+/*    const result = await client.query(
       `UPDATE aufgaben SET description = $1 WHERE id = $2`,
       [taskText, taskId]
     )
-    client.release();
-    res.status(200).send("Task updated successfully");
-    
-  } catch (error) {
-    console.error('Server Error updating task:', error.message);
-    res.status(500).send('Server Error updating task'); // Send error response to client
-  }
-})
 */
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`server is running on PORT: ${PORT}`);
+})
